@@ -30,7 +30,7 @@ class DrawerHeaderWidget extends StatelessWidget {
                 builder: (context) => AboutScreen(),
               ));
             },
-            child: DrawerItem(text: "About", icon: Icons.info),
+            child: DrawerItem(text: "Aboutrr", icon: Icons.info),
           ),
           Divider(),
           GestureDetector(

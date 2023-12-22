@@ -55,7 +55,7 @@ Future<void> resetDB(
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const BottomBar(),
+          builder: (context) => BottomBar(),
         ));
   }
 }

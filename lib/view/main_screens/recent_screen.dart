@@ -36,7 +36,7 @@ class _RecentScreenState extends State<RecentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final recentProvider=Provider.of<RecentScreenProvider>(context);
+    final recentProvider = Provider.of<RecentScreenProvider>(context);
     List<FileModel> files = FileNotifier.value;
     return Scaffold(
         appBar: AppBar(
@@ -58,15 +58,16 @@ class _RecentScreenState extends State<RecentScreen> {
           actions: [
             PopupMenuButton<String>(
               onSelected: (choice) {
-                setState(() {
-                  if (choice == 'gridView') {
-                  recentProvider.isListView = false;
-                  } else if (choice == 'listView') {
-                  recentProvider. isListView = true;
-                  } else if (choice == 'sort') {
-                  recentProvider.isSorted = true;
-                  }
-                });
+                //setState(() {
+                if (choice == 'gridView') {
+                  recentProvider.isListFalse();
+                } else if (choice == 'listView') {
+                  // recentProvider.isListView = true;
+                  recentProvider.isListTrue();
+                } else if (choice == 'sort') {
+                  recentProvider.issortedTrue();
+                }
+                // });
               },
               itemBuilder: (BuildContext context) {
                 return [
@@ -107,8 +108,8 @@ class _RecentScreenState extends State<RecentScreen> {
             Padding(
               padding: EdgeInsets.all(15.0),
               child: TextField(
-                controller:recentProvider.searchController ,
-                onChanged:recentProvider.onSearchTextChanged,
+                controller: recentProvider.searchController,
+                onChanged: recentProvider.onSearchTextChanged,
                 decoration: InputDecoration(
                     filled: true,
                     fillColor: Color.fromARGB(255, 243, 238, 238),
@@ -125,7 +126,9 @@ class _RecentScreenState extends State<RecentScreen> {
             ),
             Divider(color: const Color.fromARGB(255, 0, 0, 0), thickness: 1),
             Expanded(
-              child: (recentProvider.isListView ? buildListView() : buildGridView()),
+              child: (recentProvider.isListView
+                  ? buildListView()
+                  : buildGridView()),
             )
           ],
         ));
@@ -232,7 +235,7 @@ class _RecentScreenState extends State<RecentScreen> {
   //---------------------------sorting and searching------------------------------
 
   List<FileModel> sorting_Searching(List<FileModel> files) {
-        final recentProvider=Provider.of<RecentScreenProvider>(context);
+    final recentProvider = Provider.of<RecentScreenProvider>(context);
     if (recentProvider.isSorted) {
       files.sort((a, b) => b.fileName.compareTo(a.fileName));
     }
@@ -240,8 +243,9 @@ class _RecentScreenState extends State<RecentScreen> {
 
     if (recentProvider.searchQuery.isNotEmpty) {
       files = files
-          .where((file) =>
-              file.fileName.toLowerCase().contains(recentProvider.searchQuery.toLowerCase()))
+          .where((file) => file.fileName
+              .toLowerCase()
+              .contains(recentProvider.searchQuery.toLowerCase()))
           .toList();
     }
     return files;

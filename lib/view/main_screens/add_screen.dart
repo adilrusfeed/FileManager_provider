@@ -1,23 +1,21 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unnecessary_import, library_private_types_in_public_api, avoid_unnecessary_containers, use_build_context_synchronously
+// ignore_for_file: prefer_const_constructors
 
+import 'package:file_manager/controller/add_provider.dart';
 import 'package:file_manager/db/function.dart';
-import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
+import 'package:provider/provider.dart';
 
-class AddScreen extends StatefulWidget {
+
+
+class AddScreen extends StatelessWidget {
   const AddScreen({Key? key}) : super(key: key);
 
   @override
-  _AddScreenState createState() => _AddScreenState();
-}
-
-class _AddScreenState extends State<AddScreen> {
-  List<PlatformFile>? selectedFiles;
-
-  @override
   Widget build(BuildContext context) {
+    // final fileProvider = Provider.of<FileManagerProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -33,151 +31,162 @@ class _AddScreenState extends State<AddScreen> {
           ),
         ),
       ),
-      body: Container(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              InkWell(
-                onTap: () {
-                  pickFiless();
-                },
-                child: Container(
-                  height: 66,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 240, 236, 236),
-                    border: Border.all(
-                      width: 2,
-                      color: Color.fromARGB(255, 0, 0, 0),
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "Add files",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 10),
-              FloatingActionButton.extended(
-                backgroundColor: Colors.orangeAccent,
-                onPressed: () async {
-                  if (selectedFiles != null && selectedFiles!.isNotEmpty) {
-                    for (var file in selectedFiles!) {
-                      await pickFile(file);
-                    }
-
-                    getAlldata();
-                    setState(() {
-                      selectedFiles = null;
-                    });
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      duration: Duration(seconds: 1),
-                      content: Text(
-                        "Added Successfully",
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
-                      ),
-                      backgroundColor: Colors.green,
-                    ));
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      duration: Duration(seconds: 1),
-                      content: Text(
-                        "Select a File",
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
-                      ),
-                      backgroundColor: const Color.fromARGB(255, 219, 27, 27),
-                    ));
-                  }
-                },
-                label: Text("Save"),
-              ),
-              SizedBox(height: 10),
-              Divider(),
-              if (selectedFiles != null && selectedFiles!.isNotEmpty)
-                Column(children: [
-                  for (int index = 0; index < selectedFiles!.length; index++)
-                    GestureDetector(
-                      onTap: () {
-                        openFile(selectedFiles![index]);
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(12),
-                        margin: EdgeInsets.symmetric(vertical: 5),
-                        decoration: BoxDecoration(
-                          color: Color.fromARGB(208, 255, 147, 7),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Stack(
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Selected File:",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  selectedFiles![index].name,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Align(
-                              alignment: Alignment.topRight,
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    selectedFiles!.removeAt(index);
-                                  });
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.red,
-                                      border: Border.all(width: 1)),
-                                  child: Icon(
-                                    Icons.close,
-                                    color: Colors.white,
-                                    size: 18, // Adjust size for smaller icon
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                ]),
-            ],
-          ),
-        ),
+      body: ChangeNotifierProvider(
+        create: (context) => FileManagerProvider(),
+        child: _buildUI(),
       ),
     );
   }
 
-  void pickFiless() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.any,
-      allowMultiple: true,
+  Widget _buildUI() {
+    return Consumer<FileManagerProvider>(
+      builder: (context, provider, child) {
+        return Container(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                InkWell(
+                  onTap: () async {
+                    pickFiless(context);
+                  },
+                  child: Container(
+                    height: 66,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 240, 236, 236),
+                      border: Border.all(
+                        width: 2,
+                        color: Color.fromARGB(255, 0, 0, 0),
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Add files",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                FloatingActionButton.extended(
+                  backgroundColor: Colors.orangeAccent,
+                  onPressed: () async {
+                    if (provider.selectedFiles != null &&
+                        provider.selectedFiles!.isNotEmpty) {
+                      for (var file in provider.selectedFiles!) {
+                        await pickFile(file);
+                      }
+
+                      // getAlldata(); // Assuming getAlldata is defined somewhere
+                      provider.setFiles(null);
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        duration: Duration(seconds: 1),
+                        content: Text(
+                          "Added Successfully",
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.bold),
+                        ),
+                        backgroundColor: Colors.green,
+                      ));
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        duration: Duration(seconds: 1),
+                        content: Text(
+                          "Select a File",
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.bold),
+                        ),
+                        backgroundColor: const Color.fromARGB(255, 219, 27, 27),
+                      ));
+                    }
+                  },
+                  label: Text("Save"),
+                ),
+                SizedBox(height: 10),
+                Divider(),
+                if (provider.selectedFiles != null &&
+                    provider.selectedFiles!.isNotEmpty)
+                  Column(
+                    children: [
+                      for (int index = 0;
+                          index < provider.selectedFiles!.length;
+                          index++)
+                        GestureDetector(
+                          onTap: () {
+                            openFile(provider.selectedFiles![index]);
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(12),
+                            margin: EdgeInsets.symmetric(vertical: 5),
+                            decoration: BoxDecoration(
+                              color: Color.fromARGB(208, 255, 147, 7),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Stack(
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Selected File:",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      provider.selectedFiles![index].name,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      provider.selectedFiles!.removeAt(index);
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.red,
+                                          border: Border.all(width: 1)),
+                                      child: Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                        size: 18,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
     );
+  }
+
+  void pickFiless(BuildContext context) async {
+    FileManagerProvider provider =
+        Provider.of<FileManagerProvider>(context, listen: false);
+
+    FilePickerResult? result = await provider.pickFiless();
 
     if (result != null && result.files.isNotEmpty) {
-      setState(() {
-        selectedFiles = result.files;
-      });
+      provider.setFiles(result.files);
     }
   }
 

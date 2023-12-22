@@ -1,10 +1,14 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_import
 
-// 
+//
+import 'package:file_manager/controller/add_provider.dart';
 import 'package:file_manager/controller/audio_provider.dart';
+import 'package:file_manager/controller/bottom_provider.dart';
 import 'package:file_manager/controller/chart_provider.dart';
 import 'package:file_manager/controller/document_provider.dart';
+import 'package:file_manager/controller/image_provider.dart';
 import 'package:file_manager/controller/recent_screen_provider.dart';
+import 'package:file_manager/controller/video_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -31,9 +35,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => RecentScreenProvider(),
         ),
-        // ChangeNotifierProvider(
-        //   create: (context) => AddProvider(),
-        // ),
+        ChangeNotifierProvider(
+          create: (context) => FileManagerProvider(),
+        ),
         ChangeNotifierProvider(
           create: (context) => DocumentProvider(),
         ),
@@ -42,7 +46,16 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => ChartScreenProvider(),
-        )
+        ),
+        ChangeNotifierProvider(
+          create: (context) => VideoProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ImagesProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => BottomProvider(),
+        ),
       ],
       child: MaterialApp(
         title: 'File organiser',
