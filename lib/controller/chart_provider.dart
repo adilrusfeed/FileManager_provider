@@ -1,7 +1,11 @@
+
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
 
 class ChartScreenProvider extends ChangeNotifier{
+
+
+
   bool isImageFile(String fileName) {
   var imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
   var extension = path.extension(fileName).toLowerCase();

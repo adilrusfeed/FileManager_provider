@@ -1,7 +1,8 @@
 // ignore_for_file: prefer_const_constructors, depend_on_referenced_packages, avoid_unnecessary_containers
 
+import 'package:file_manager/controller/db_provider.dart';
 import 'package:file_manager/controller/video_provider.dart';
-import 'package:file_manager/db/function.dart';
+
 import 'package:file_manager/model/data_model.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -11,7 +12,6 @@ import 'package:provider/provider.dart';
 class VideoScreen extends StatelessWidget {
   const VideoScreen({super.key});
 
-  // TextEditingController searchController3 = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final videoprovider = Provider.of<VideoProvider>(context);
@@ -56,10 +56,10 @@ class VideoScreen extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: ValueListenableBuilder<List<FileModel>>(
-              valueListenable: FileNotifier,
-              builder: (context, files, child) {
-                List<FileModel> sortedFiles = List.from(files);
+            child: Consumer<DbProvider>(
+              
+              builder: (context, dbProvider, child) {
+                List<FileModel> sortedFiles = List.from(dbProvider.recentFiles);
                 sortedFiles.sort((a, b) {
                   return videoprovider.isAscending
                       ? b.fileName.compareTo(a.fileName)
@@ -85,7 +85,7 @@ class VideoScreen extends StatelessWidget {
                           child: Container(
                             child: ListTile(
                               onTap: () {
-                                openFile(file);
+                               dbProvider. openFile(file);
                               },
                               title: Text(
                                 file.fileName,
@@ -103,7 +103,7 @@ class VideoScreen extends StatelessWidget {
                                       shape: MaterialStatePropertyAll(
                                           CircleBorder(eccentricity: 0))),
                                   onPressed: () {
-                                    _deleteDialog(file,context);
+                                    _deleteDialog(file,context,dbProvider);
                                   },
                                   child: Icon(
                                     Icons.delete,
@@ -124,7 +124,7 @@ class VideoScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _deleteDialog(FileModel file,context) async {
+  Future<void> _deleteDialog(FileModel file,context,DbProvider dbProvider) async {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -147,7 +147,7 @@ class VideoScreen extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                deleteFile(file);
+              dbProvider.  deleteFile(file);
                 Navigator.of(context).pop();
               },
               child: Text('Delete'),

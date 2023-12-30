@@ -1,7 +1,8 @@
 // ignore_for_file: prefer_const_constructors, non_constant_identifier_names, prefer_const_literals_to_create_immutables, use_key_in_widget_constructors
 
-import 'package:file_manager/db/function.dart';
-import 'package:file_manager/model/data_model.dart';
+
+import 'package:file_manager/controller/db_provider.dart';
+
 import 'package:file_manager/view/catogory_screen/audio_screen/audio_screen.dart';
 import 'package:file_manager/view/catogory_screen/document_screen/document_screen.dart';
 import 'package:file_manager/view/catogory_screen/image_screen/image_screen.dart';
@@ -13,6 +14,7 @@ import 'package:file_manager/view/widget/drawer_page.dart';
 import 'package:file_manager/view/widget/pass_files.dart';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key});
@@ -159,28 +161,27 @@ class HomeScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(22.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("files added"),
-                        ValueListenableBuilder<List<FileModel>>(
-                          valueListenable: FileNotifier,
-                          builder: (context, files, child) {
-                            int totalCount = files.length;
-
-                            return CircleAvatar(
-                              backgroundColor:
-                                  const Color.fromARGB(255, 255, 255, 255),
-                              child: Text(
-                                totalCount.toString(),
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 20),
-                              ),
-                            );
-                          },
-                        )
-                      ],
+                           children: [
+            Text("files added"),
+            CircleAvatar(
+              backgroundColor:
+                  const Color.fromARGB(255, 255, 255, 255),
+              child: Consumer<DbProvider>(
+                builder: (context, dbProvider, child) {
+                  return Text(
+                    dbProvider.recentFiles.length.toString(),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
                     ),
-                  ),
-                ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
                 SizedBox(height: 25),
                 //------------------------row(recemtfile & see all)-------------------------
                 Row(
@@ -215,7 +216,7 @@ class HomeScreen extends StatelessWidget {
             //------------------passfiles---------------------------------------
             Column(
               children: [
-                passfiles(),
+                PassFiles(),
               ],
             )
           ],

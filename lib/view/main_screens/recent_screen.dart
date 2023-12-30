@@ -1,9 +1,9 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_interpolation_to_compose_strings, library_private_types_in_public_api, prefer_const_constructors_in_immutables, non_constant_identifier_names, unused_local_variable
 
+import 'package:file_manager/controller/db_provider.dart';
 import 'package:file_manager/controller/recent_screen_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:file_manager/model/data_model.dart';
-import 'package:file_manager/db/function.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
@@ -15,29 +15,19 @@ class RecentScreen extends StatefulWidget {
 }
 
 class _RecentScreenState extends State<RecentScreen> {
-  // TextEditingController searchController = TextEditingController();
-
-  // -------------Default view mode is gridView --------------------------
-  // bool isListView = true;
-  // bool isSorted = false;
-  // String searchQuery = "";
-
-  // void onSearchTextChanged(String query) {
-  //   setState(() {
-  //     searchQuery = query;
-  //   });
-  // }
-
+  late DbProvider dbProvider;
   @override
   void initState() {
-    getAlldata();
+    // final provider = Provider.of<DbProvider>(context);
+    // provider.getAllData();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final recentProvider = Provider.of<RecentScreenProvider>(context);
-    List<FileModel> files = FileNotifier.value;
+
+    List<FileModel> files = Provider.of<DbProvider>(context).recentFiles;
     return Scaffold(
         appBar: AppBar(
           actionsIconTheme: IconThemeData(color: Colors.black),
@@ -136,10 +126,9 @@ class _RecentScreenState extends State<RecentScreen> {
 
 //-------------------------------------------listview-------------------------------------------
   Widget buildListView() {
-    return ValueListenableBuilder<List<FileModel>>(
-      valueListenable: FileNotifier,
-      builder: (context, files, child) {
-        files = sorting_Searching(files);
+    return Consumer<DbProvider>(
+      builder: (context, dbProvider, child) {
+        List<FileModel> files = sorting_Searching(dbProvider.recentFiles);
 
         return ListView.builder(
           itemCount: files.length,
@@ -157,7 +146,7 @@ class _RecentScreenState extends State<RecentScreen> {
                       height: 60,
                       child: ListTile(
                           onTap: () {
-                            openFile(file);
+                            dbProvider.openFile(file);
                           },
                           title: Text(
                             file.fileName,
@@ -177,10 +166,9 @@ class _RecentScreenState extends State<RecentScreen> {
 
 //----------------------------gridview--------------------------
   Widget buildGridView() {
-    return ValueListenableBuilder<List<FileModel>>(
-      valueListenable: FileNotifier,
-      builder: (context, files, child) {
-        files = sorting_Searching(files);
+    return Consumer<DbProvider>(
+      builder: (context, dbProvider, child) {
+        List<FileModel> files = sorting_Searching(dbProvider.recentFiles);
 
         return GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -193,7 +181,7 @@ class _RecentScreenState extends State<RecentScreen> {
             final file = files[index];
             return GestureDetector(
               onTap: () {
-                openFile(file);
+                dbProvider.openFile(file);
               },
               child: Card(
                 color: Color.fromARGB(208, 255, 147, 7),
@@ -283,8 +271,10 @@ class _RecentScreenState extends State<RecentScreen> {
                       newName + "." + file.fileName.split('.').last;
 
                   file.fileName = newFileName;
-                  await renameFile1(
-                    FileNotifier.value
+                  final dbProvider =
+                      Provider.of<DbProvider>(context, listen: false);
+                  await dbProvider.renameFile1(
+                    dbProvider.recentFiles
                         .indexWhere((eachfile) => eachfile.id == file.id),
                     file,
                   );
@@ -365,7 +355,9 @@ class _RecentScreenState extends State<RecentScreen> {
             ),
             TextButton(
               onPressed: () {
-                deleteFile(file);
+                final dbProvider =
+                    Provider.of<DbProvider>(context, listen: false);
+                dbProvider.deleteFile(file);
                 Navigator.of(context).pop();
               },
               child: Text('Delete'),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 
-class FileManagerProvider extends ChangeNotifier {
+class AddScreenProvider extends ChangeNotifier {
   List<PlatformFile>? selectedFiles;
 
   void setFiles(List<PlatformFile>? files) {
@@ -23,7 +23,7 @@ class FileManagerProvider extends ChangeNotifier {
       return result;
     } catch (e) {
       print("Error picking files: $e");
-      
+
       return null;
     }
   }

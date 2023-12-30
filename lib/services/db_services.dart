@@ -1,15 +1,35 @@
+
 import 'package:file_manager/model/data_model.dart';
 import 'package:file_picker/file_picker.dart';
+
 import 'package:hive_flutter/hive_flutter.dart';
 
-class DbService {
-  Future<List<FileModel>> pickFile(PlatformFile selectedFile) async {
-    final fileDB = await Hive.openBox<FileModel>("FileModel_db");
+class DbServices {
+  Future<List<FileModel>> getAllData() async {
+    final fileDB = await Hive.openBox<FileModel>('FileModel_db');
     return fileDB.values.toList();
   }
 
-  Future<void> getAlldata() async {
-    final fileDB = await Hive.openBox<FileModel>("FileModel_db");
-    return fileDB.add(value)
+  Future<void> pickFile(PlatformFile selectedFile) async {
+    final fileDB = await Hive.openBox<FileModel>('FileModel_db');
+    final file = FileModel(
+      id: DateTime.now().millisecondsSinceEpoch,
+      fileName: selectedFile.name,
+      filePath: selectedFile.path ?? '',
+    );
+
+    await fileDB.add(file);
   }
+
+  Future<void> deleteFile(FileModel file) async {
+    final fileDB = await Hive.openBox<FileModel>('FileModel_db');
+    fileDB.deleteAt(file.id);
+  }
+
+  Future<void> renameFile1(int index, FileModel newValue) async {
+    final fileDB = await Hive.openBox<FileModel>('FileModel_db');
+    fileDB.putAt(index, newValue);
+  }
+
+
 }

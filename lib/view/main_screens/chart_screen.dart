@@ -3,8 +3,10 @@
 import 'dart:math';
 
 import 'package:file_manager/controller/chart_provider.dart';
-import 'package:file_manager/db/function.dart';
+import 'package:file_manager/controller/db_provider.dart';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ChartScreen extends StatefulWidget {
@@ -24,8 +26,6 @@ class _PieData {
   final Color color;
 }
 
-
-
 class _ChartScreenState extends State<ChartScreen> {
   late List<_PieData> pieData;
 
@@ -40,26 +40,22 @@ class _ChartScreenState extends State<ChartScreen> {
     super.initState();
     updateChartData();
 
-    FileNotifier.addListener(() {
-      updateChartData();
-
-      // if (mounted) {
-      //   // setState(() {});
-      // }
-    });
+    Provider.of<DbProvider>(context, listen: false)
+        .addListener(updateChartData);
   }
 
   void updateChartData() {
-    int imageCount = FileNotifier.value
+    final dbProvider = Provider.of<DbProvider>(context, listen: false);
+    int imageCount = dbProvider.recentFiles
         .where((file) => ChartScreenProvider().isImageFile(file.fileName))
         .length;
-    int videoCount = FileNotifier.value
+    int videoCount = dbProvider.recentFiles
         .where((file) => ChartScreenProvider().isVideoFile(file.fileName))
         .length;
-    int audioCount = FileNotifier.value
+    int audioCount = dbProvider.recentFiles
         .where((file) => ChartScreenProvider().isAudioFile(file.fileName))
         .length;
-    int documentCount = FileNotifier.value
+    int documentCount = dbProvider.recentFiles
         .where((file) => ChartScreenProvider().isDocumentFile(file.fileName))
         .length;
 

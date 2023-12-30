@@ -1,7 +1,7 @@
 // ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, depend_on_referenced_packages, library_private_types_in_public_api
 
+import 'package:file_manager/controller/db_provider.dart';
 import 'package:file_manager/controller/image_provider.dart';
-import 'package:file_manager/db/function.dart';
 import 'package:file_manager/model/data_model.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -54,10 +54,10 @@ class ImageScreen extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: ValueListenableBuilder<List<FileModel>>(
-              valueListenable: FileNotifier,
-              builder: (context, files, child) {
-                List<FileModel> sortedFiles = List.from(files);
+            child: Consumer<DbProvider>(
+         
+              builder: (context, dbproider, child) {
+                List<FileModel> sortedFiles = List.from(dbproider.recentFiles);
                 sortedFiles.sort((a, b) {
                   return imageprovider.isAscending
                       ? b.fileName.compareTo(a.fileName)
@@ -82,7 +82,7 @@ class ImageScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(3),
                         child: ListTile(
                           onTap: () {
-                            openFile(file);
+                          dbproider.  openFile(file);
                           },
                           title: Text(file.fileName),
                           leading: Icon(
@@ -99,7 +99,7 @@ class ImageScreen extends StatelessWidget {
                               ),
                             ),
                             onPressed: () {
-                              _deleteDialog(file, context);
+                              _deleteDialog(file, context,dbproider);
                             },
                             child: Icon(
                               Icons.delete,
@@ -121,7 +121,7 @@ class ImageScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _deleteDialog(FileModel file, context) async {
+  Future<void> _deleteDialog(FileModel file, context,DbProvider dbProvider) async {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -144,7 +144,7 @@ class ImageScreen extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                deleteFile(file);
+               dbProvider. deleteFile(file);
                 Navigator.of(context).pop();
               },
               child: Text('Delete'),

@@ -1,21 +1,18 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:file_manager/controller/add_provider.dart';
-import 'package:file_manager/db/function.dart';
+import 'package:file_manager/controller/db_provider.dart';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
+
 import 'package:provider/provider.dart';
-
-
-
 class AddScreen extends StatelessWidget {
   const AddScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // final fileProvider = Provider.of<FileManagerProvider>(context);
-
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -32,14 +29,14 @@ class AddScreen extends StatelessWidget {
         ),
       ),
       body: ChangeNotifierProvider(
-        create: (context) => FileManagerProvider(),
-        child: _buildUI(),
+        create: (context) => AddScreenProvider(),
+        child: _buildUI(context),
       ),
     );
   }
 
-  Widget _buildUI() {
-    return Consumer<FileManagerProvider>(
+  Widget _buildUI(BuildContext context) {
+    return Consumer<AddScreenProvider>(
       builder: (context, provider, child) {
         return Container(
           child: SingleChildScrollView(
@@ -76,9 +73,7 @@ class AddScreen extends StatelessWidget {
                   onPressed: () async {
                     if (provider.selectedFiles != null &&
                         provider.selectedFiles!.isNotEmpty) {
-                      for (var file in provider.selectedFiles!) {
-                        await pickFile(file);
-                      }
+                      await addFileToDb( context, provider.selectedFiles!);
 
                       // getAlldata(); // Assuming getAlldata is defined somewhere
                       provider.setFiles(null);
@@ -180,8 +175,8 @@ class AddScreen extends StatelessWidget {
   }
 
   void pickFiless(BuildContext context) async {
-    FileManagerProvider provider =
-        Provider.of<FileManagerProvider>(context, listen: false);
+    AddScreenProvider provider =
+        Provider.of<AddScreenProvider>(context, listen: false);
 
     FilePickerResult? result = await provider.pickFiless();
 
@@ -199,6 +194,13 @@ class AddScreen extends StatelessWidget {
       print(fileName);
     } catch (error) {
       print(error);
+    }
+  }
+
+  Future<void> addFileToDb( BuildContext context, List<PlatformFile> files) async {
+    DbProvider dbProvider = Provider.of<DbProvider>(context, listen: false);
+    for (var file in files) {
+      await dbProvider.pickFile(file);
     }
   }
 }

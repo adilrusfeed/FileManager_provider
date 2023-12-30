@@ -1,7 +1,8 @@
 // ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers, depend_on_referenced_packages
 
+import 'package:file_manager/controller/db_provider.dart';
 import 'package:file_manager/controller/document_provider.dart';
-import 'package:file_manager/db/function.dart';
+
 import 'package:file_manager/model/data_model.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -10,7 +11,6 @@ import 'package:provider/provider.dart';
 class DocumentScreen extends StatelessWidget {
   const DocumentScreen({super.key});
 
-  // TextEditingController searchcontroller5 = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final documentprovider = Provider.of<DocumentProvider>(context);
@@ -55,10 +55,10 @@ class DocumentScreen extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: ValueListenableBuilder<List<FileModel>>(
-              valueListenable: FileNotifier,
-              builder: (context, files, child) {
-                List<FileModel> sortedFiles = List.from(files);
+            child:Consumer<DbProvider>(
+             
+              builder: (context, dbProvider, child) {
+                List<FileModel> sortedFiles = List.from(dbProvider.recentFiles);
                 sortedFiles.sort((a, b) {
                   return documentprovider.isAscending
                       ? b.fileName.compareTo(a.fileName)
@@ -81,7 +81,7 @@ class DocumentScreen extends StatelessWidget {
                       if (documentprovider.isDocumentFile(file.fileName)) {
                         return ListTile(
                           onTap: () {
-                            openFile(file);
+                          dbProvider.  openFile(file);
                           },
                           title: Text(
                             file.fileName,
@@ -98,7 +98,7 @@ class DocumentScreen extends StatelessWidget {
                                   shape: MaterialStatePropertyAll(
                                       CircleBorder(eccentricity: 0))),
                               onPressed: () {
-                                _deleteDialog(file,context);
+                                _deleteDialog(file,context,dbProvider);
                               },
                               child: Icon(
                                 Icons.delete,
@@ -117,7 +117,7 @@ class DocumentScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _deleteDialog(FileModel file,context) async {
+  Future<void> _deleteDialog(FileModel file,context,DbProvider dbProvider) async {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -140,7 +140,7 @@ class DocumentScreen extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                deleteFile(file);
+               dbProvider. deleteFile(file);
                 Navigator.of(context).pop();
               },
               child: Text('Delete'),

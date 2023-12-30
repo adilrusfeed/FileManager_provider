@@ -34,6 +34,7 @@ class RecentScreenProvider extends ChangeNotifier {
     isSorted = true;
     notifyListeners();
   }
+  
 }
 
   // void popup(){

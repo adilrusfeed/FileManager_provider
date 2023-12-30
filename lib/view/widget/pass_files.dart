@@ -1,20 +1,19 @@
 // ignore_for_file: camel_case_types, prefer_const_constructors
 
-import 'package:file_manager/db/function.dart';
-import 'package:file_manager/model/data_model.dart';
+import 'package:file_manager/controller/db_provider.dart';
+
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 
-class passfiles extends StatelessWidget {
-  const passfiles({
-    super.key,
-  });
+class PassFiles extends StatelessWidget {
+  const PassFiles({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<List<FileModel>>(
-      valueListenable: FileNotifier,
-      builder: (context, recentFiles, child) {
+    return Consumer<DbProvider>(
+      builder: (context, dbProvider, child) {
+        final recentFiles = dbProvider.recentFiles;
         final limitedFiles = recentFiles.take(5).toList();
         return Column(
           children: [
@@ -26,7 +25,8 @@ class passfiles extends StatelessWidget {
                 elevation: 4,
                 child: GestureDetector(
                   onTap: () {
-                    openFile(limitedFiles[index]);
+                    DbProvider().openFile(limitedFiles[
+                        index]); // Instantiate DbProvider and call openFile
                   },
                   child: Container(
                     decoration: BoxDecoration(

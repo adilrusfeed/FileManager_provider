@@ -5,6 +5,7 @@ import 'package:file_manager/controller/add_provider.dart';
 import 'package:file_manager/controller/audio_provider.dart';
 import 'package:file_manager/controller/bottom_provider.dart';
 import 'package:file_manager/controller/chart_provider.dart';
+import 'package:file_manager/controller/db_provider.dart';
 import 'package:file_manager/controller/document_provider.dart';
 import 'package:file_manager/controller/image_provider.dart';
 import 'package:file_manager/controller/recent_screen_provider.dart';
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
           create: (context) => RecentScreenProvider(),
         ),
         ChangeNotifierProvider(
-          create: (context) => FileManagerProvider(),
+          create: (context) => AddScreenProvider(),
         ),
         ChangeNotifierProvider(
           create: (context) => DocumentProvider(),
@@ -56,6 +57,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => BottomProvider(),
         ),
+        ChangeNotifierProvider(create: (context) => DbProvider(),)
       ],
       child: MaterialApp(
         title: 'File organiser',
