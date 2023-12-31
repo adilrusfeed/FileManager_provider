@@ -1,4 +1,3 @@
-
 // ignore_for_file: avoid_print
 
 import 'package:file_manager/model/data_model.dart';
@@ -11,7 +10,6 @@ class DbProvider extends ChangeNotifier {
   List<FileModel> recentFiles = [];
   DbServices dbServices = DbServices();
 
- 
   Future<void> getAllData() async {
     recentFiles = await dbServices.getAllData();
     notifyListeners();
@@ -30,7 +28,7 @@ class DbProvider extends ChangeNotifier {
   }
 
   Future<void> renameFile1(int index, FileModel newValue) async {
-    await dbServices.renameFile1(index, newValue);    
+    await dbServices.renameFile1(index, newValue);
     await getAllData();
     notifyListeners();
   }

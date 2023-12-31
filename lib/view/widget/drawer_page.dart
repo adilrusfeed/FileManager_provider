@@ -61,15 +61,6 @@ class DrawerHeaderWidget extends StatelessWidget {
             },
             child: DrawerItem(text: "Exit", icon: Icons.exit_to_app),
           ),
-          Divider(),
-          SizedBox(height: 30),
-          Align(
-            alignment: Alignment.center,
-            child: Text(
-              "version : 1.0.1",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
         ],
       ),
     );

@@ -15,13 +15,13 @@ class ImageScreen extends StatelessWidget {
     final imageprovider = Provider.of<ImagesProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
         title: Text('Images'),
         actions: [
           ElevatedButton(
               style: ButtonStyle(
                 backgroundColor: MaterialStatePropertyAll(
-                    const Color.fromARGB(255, 0, 0, 0)),
+                    Color.fromARGB(255, 215, 208, 208)),
               ),
               onPressed: () {
                 // setState(() {
@@ -55,7 +55,6 @@ class ImageScreen extends StatelessWidget {
           ),
           Expanded(
             child: Consumer<DbProvider>(
-         
               builder: (context, dbproider, child) {
                 List<FileModel> sortedFiles = List.from(dbproider.recentFiles);
                 sortedFiles.sort((a, b) {
@@ -82,7 +81,7 @@ class ImageScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(3),
                         child: ListTile(
                           onTap: () {
-                          dbproider.  openFile(file);
+                            dbproider.openFile(file);
                           },
                           title: Text(file.fileName),
                           leading: Icon(
@@ -99,7 +98,7 @@ class ImageScreen extends StatelessWidget {
                               ),
                             ),
                             onPressed: () {
-                              _deleteDialog(file, context,dbproider);
+                              _deleteDialog(file, context, dbproider);
                             },
                             child: Icon(
                               Icons.delete,
@@ -121,7 +120,8 @@ class ImageScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _deleteDialog(FileModel file, context,DbProvider dbProvider) async {
+  Future<void> _deleteDialog(
+      FileModel file, context, DbProvider dbProvider) async {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -144,7 +144,7 @@ class ImageScreen extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-               dbProvider. deleteFile(file);
+                dbProvider.deleteFile(file);
                 Navigator.of(context).pop();
               },
               child: Text('Delete'),
