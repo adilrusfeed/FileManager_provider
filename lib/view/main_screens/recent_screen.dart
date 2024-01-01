@@ -16,13 +16,12 @@ class RecentScreen extends StatefulWidget {
 
 class _RecentScreenState extends State<RecentScreen> {
   late DbProvider dbProvider;
- @override
-void initState() {
-  super.initState();
+  @override
+  void initState() {
+    super.initState();
 
-  Provider.of<DbProvider>(context, listen: false).getAllData();
-}
-
+    Provider.of<DbProvider>(context, listen: false).getAllData();
+  }
 
   @override
   Widget build(BuildContext context) {
