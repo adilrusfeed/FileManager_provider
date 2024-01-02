@@ -4,7 +4,7 @@ import 'package:path/path.dart' as path;
 class VideoProvider extends ChangeNotifier {
   TextEditingController searchController3 = TextEditingController();
     String searchQuery = "";
-         bool isAscending = true;
+         
 
 
   bool isVideoFile(String fileName) {

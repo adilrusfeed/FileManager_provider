@@ -17,21 +17,12 @@ class VideoScreen extends StatelessWidget {
     final videoprovider = Provider.of<VideoProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-        title: Text("videos"),
-        actions: [
-          ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStatePropertyAll(
-                    const Color.fromARGB(255, 0, 0, 0)),
-              ),
-              onPressed: () {
-                // setState(() {
-                  videoprovider.isAscending = false;
-                // });
-              },
-              child: Text("sort")),
-        ],
+        iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor: Color.fromARGB(255, 0, 0, 0),
+        title: Text(
+          "videos",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Column(
         children: [
@@ -40,7 +31,7 @@ class VideoScreen extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               controller: videoprovider.searchController3,
-              onChanged:videoprovider. onSearchTextChanged,
+              onChanged: videoprovider.onSearchTextChanged,
               decoration: InputDecoration(
                   filled: true,
                   fillColor: Color.fromARGB(255, 240, 236, 236),
@@ -57,27 +48,19 @@ class VideoScreen extends StatelessWidget {
           ),
           Expanded(
             child: Consumer<DbProvider>(
-              
               builder: (context, dbProvider, child) {
-                List<FileModel> sortedFiles = List.from(dbProvider.recentFiles);
-                sortedFiles.sort((a, b) {
-                  return videoprovider.isAscending
-                      ? b.fileName.compareTo(a.fileName)
-                      : a.fileName.compareTo(b.fileName);
-                });
-
-                if (videoprovider.searchQuery.isNotEmpty) {
-                  sortedFiles = sortedFiles
-                      .where((file) => file.fileName
-                          .toLowerCase()
-                          .contains(videoprovider.searchQuery.toLowerCase()))
-                      .toList();
-                }
+                List<FileModel> filteredFiles = dbProvider.recentFiles
+                    .where((file) =>
+                        videoprovider.isVideoFile(file.fileName) &&
+                        file.fileName
+                            .toLowerCase()
+                            .contains(videoprovider.searchQuery.toLowerCase()))
+                    .toList();
 
                 return ListView.builder(
-                    itemCount: sortedFiles.length,
+                    itemCount: filteredFiles.length,
                     itemBuilder: (context, index) {
-                      final file = sortedFiles[index];
+                      final file = filteredFiles[index];
 
                       if (videoprovider.isVideoFile(file.fileName)) {
                         return Padding(
@@ -85,7 +68,7 @@ class VideoScreen extends StatelessWidget {
                           child: Container(
                             child: ListTile(
                               onTap: () {
-                               dbProvider. openFile(file);
+                                dbProvider.openFile(file);
                               },
                               title: Text(
                                 file.fileName,
@@ -103,7 +86,7 @@ class VideoScreen extends StatelessWidget {
                                       shape: MaterialStatePropertyAll(
                                           CircleBorder(eccentricity: 0))),
                                   onPressed: () {
-                                    _deleteDialog(file,context,dbProvider);
+                                    _deleteDialog(file, context, dbProvider);
                                   },
                                   child: Icon(
                                     Icons.delete,
@@ -124,7 +107,8 @@ class VideoScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _deleteDialog(FileModel file,context,DbProvider dbProvider) async {
+  Future<void> _deleteDialog(
+      FileModel file, context, DbProvider dbProvider) async {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -147,7 +131,7 @@ class VideoScreen extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-              dbProvider.  deleteFile(file);
+                dbProvider.deleteFile(file);
                 Navigator.of(context).pop();
               },
               child: Text('Delete'),

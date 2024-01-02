@@ -15,21 +15,12 @@ class ImageScreen extends StatelessWidget {
     final imageprovider = Provider.of<ImagesProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
-        title: Text('Images'),
-        actions: [
-          ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStatePropertyAll(
-                    Color.fromARGB(255, 215, 208, 208)),
-              ),
-              onPressed: () {
-                // setState(() {
-                imageprovider.isAscending = false;
-                // });
-              },
-              child: Text("sort")),
-        ],
+        iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor: Color.fromARGB(255, 0, 0, 0),
+        title: Text(
+          'Images',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Column(
         children: [
@@ -40,76 +31,67 @@ class ImageScreen extends StatelessWidget {
               controller: imageprovider.searchcontroller2,
               onChanged: imageprovider.onSearchTextChanged,
               decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 240, 236, 236),
-                  prefixIcon:
-                      Lottie.asset("assets/images/search.json", height: 60),
-                  hintText: 'Search Files',
-                  hintStyle: TextStyle(
-                      color: Color.fromARGB(255, 151, 146, 146),
-                      fontWeight: FontWeight.w500),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  )),
+                filled: true,
+                fillColor: Color.fromARGB(255, 240, 236, 236),
+                prefixIcon:
+                    Lottie.asset("assets/images/search.json", height: 60),
+                hintText: 'Search Files',
+                hintStyle: TextStyle(
+                  color: Color.fromARGB(255, 151, 146, 146),
+                  fontWeight: FontWeight.w500,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
             ),
           ),
           Expanded(
             child: Consumer<DbProvider>(
-              builder: (context, dbproider, child) {
-                List<FileModel> sortedFiles = List.from(dbproider.recentFiles);
-                sortedFiles.sort((a, b) {
-                  return imageprovider.isAscending
-                      ? b.fileName.compareTo(a.fileName)
-                      : a.fileName.compareTo(b.fileName);
-                });
-
-                if (imageprovider.searchQuery.isNotEmpty) {
-                  sortedFiles = sortedFiles
-                      .where((file) => file.fileName
-                          .toLowerCase()
-                          .contains(imageprovider.searchQuery.toLowerCase()))
-                      .toList();
-                }
+              builder: (context, dbprovider, child) {
+                List<FileModel> filteredFiles = dbprovider.recentFiles
+                    .where((file) =>
+                        imageprovider.isImageFile(file.fileName) &&
+                        file.fileName
+                            .toLowerCase()
+                            .contains(imageprovider.searchQuery.toLowerCase()))
+                    .toList();
 
                 return ListView.builder(
-                  itemCount: sortedFiles.length,
+                  itemCount: filteredFiles.length,
                   itemBuilder: (context, index) {
-                    final file = sortedFiles[index];
+                    final file = filteredFiles[index];
 
-                    if (imageprovider.isImageFile(file.fileName)) {
-                      return Padding(
-                        padding: const EdgeInsets.all(3),
-                        child: ListTile(
-                          onTap: () {
-                            dbproider.openFile(file);
-                          },
-                          title: Text(file.fileName),
-                          leading: Icon(
-                            Icons.image,
-                            color: Colors.orange,
+                    return Padding(
+                      padding: const EdgeInsets.all(3),
+                      child: ListTile(
+                        onTap: () {
+                          dbprovider.openFile(file);
+                        },
+                        title: Text(file.fileName),
+                        leading: Icon(
+                          Icons.image,
+                          color: Colors.orange,
+                        ),
+                        trailing: ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStatePropertyAll(
+                              const Color.fromARGB(255, 255, 255, 255),
+                            ),
+                            shape: MaterialStatePropertyAll(
+                              CircleBorder(eccentricity: 0),
+                            ),
                           ),
-                          trailing: ElevatedButton(
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll(
-                                const Color.fromARGB(255, 255, 255, 255),
-                              ),
-                              shape: MaterialStatePropertyAll(
-                                CircleBorder(eccentricity: 0),
-                              ),
-                            ),
-                            onPressed: () {
-                              _deleteDialog(file, context, dbproider);
-                            },
-                            child: Icon(
-                              Icons.delete,
-                              color: Colors.red,
-                            ),
+                          onPressed: () {
+                            _deleteDialog(file, context, dbprovider);
+                          },
+                          child: Icon(
+                            Icons.delete,
+                            color: Colors.red,
                           ),
                         ),
-                      );
-                    } else {
-                      return Container();
-                    }
+                      ),
+                    );
                   },
                 );
               },
@@ -121,7 +103,7 @@ class ImageScreen extends StatelessWidget {
   }
 
   Future<void> _deleteDialog(
-      FileModel file, context, DbProvider dbProvider) async {
+      FileModel file, context, DbProvider dbprovider) async {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -130,8 +112,10 @@ class ImageScreen extends StatelessWidget {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Are you sure you want to delete ${file.fileName}?',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                  'Are you sure you want to delete ${file.fileName}?',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ],
             ),
           ),
@@ -144,7 +128,7 @@ class ImageScreen extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                dbProvider.deleteFile(file);
+                dbprovider.deleteFile(file);
                 Navigator.of(context).pop();
               },
               child: Text('Delete'),

@@ -16,21 +16,12 @@ class DocumentScreen extends StatelessWidget {
     final documentprovider = Provider.of<DocumentProvider>(context);
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-        title: Text("documents"),
-        actions: [
-          ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStatePropertyAll(
-                    const Color.fromARGB(255, 0, 0, 0)),
-              ),
-              onPressed: () {
-                // setState(() {
-                  documentprovider.isAscending = false;
-                // });
-              },
-              child: Text("sort")),
-        ],
+        title: Text(
+          "documents",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Column(
         children: [
@@ -38,7 +29,7 @@ class DocumentScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
-              controller:documentprovider. searchcontroller5,
+              controller: documentprovider.searchcontroller5,
               onChanged: documentprovider.onSearchTextChanged,
               decoration: InputDecoration(
                   filled: true,
@@ -55,33 +46,24 @@ class DocumentScreen extends StatelessWidget {
             ),
           ),
           Expanded(
-            child:Consumer<DbProvider>(
-             
+            child: Consumer<DbProvider>(
               builder: (context, dbProvider, child) {
-                List<FileModel> sortedFiles = List.from(dbProvider.recentFiles);
-                sortedFiles.sort((a, b) {
-                  return documentprovider.isAscending
-                      ? b.fileName.compareTo(a.fileName)
-                      : a.fileName.compareTo(b.fileName);
-                });
-
-                if (documentprovider. searchQuery.isNotEmpty) {
-                  sortedFiles = sortedFiles
-                      .where((file) => file.fileName
-                          .toLowerCase()
-                          .contains(documentprovider. searchQuery.toLowerCase()))
-                      .toList();
-                }
+                List<FileModel> filteredFiles = dbProvider.recentFiles
+                    .where((file) =>
+                        documentprovider.isDocumentFile(file.fileName) &&
+                        file.fileName.toLowerCase().contains(
+                            documentprovider.searchQuery.toLowerCase()))
+                    .toList();
 
                 return ListView.builder(
-                    itemCount: sortedFiles.length,
+                    itemCount: filteredFiles.length,
                     itemBuilder: (context, index) {
-                      final file = sortedFiles[index];
+                      final file = filteredFiles[index];
 
                       if (documentprovider.isDocumentFile(file.fileName)) {
                         return ListTile(
                           onTap: () {
-                          dbProvider.  openFile(file);
+                            dbProvider.openFile(file);
                           },
                           title: Text(
                             file.fileName,
@@ -98,7 +80,7 @@ class DocumentScreen extends StatelessWidget {
                                   shape: MaterialStatePropertyAll(
                                       CircleBorder(eccentricity: 0))),
                               onPressed: () {
-                                _deleteDialog(file,context,dbProvider);
+                                _deleteDialog(file, context, dbProvider);
                               },
                               child: Icon(
                                 Icons.delete,
@@ -117,7 +99,8 @@ class DocumentScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _deleteDialog(FileModel file,context,DbProvider dbProvider) async {
+  Future<void> _deleteDialog(
+      FileModel file, context, DbProvider dbProvider) async {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -140,7 +123,7 @@ class DocumentScreen extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-               dbProvider. deleteFile(file);
+                dbProvider.deleteFile(file);
                 Navigator.of(context).pop();
               },
               child: Text('Delete'),

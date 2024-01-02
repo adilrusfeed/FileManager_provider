@@ -17,21 +17,10 @@ class AudioScreen extends StatelessWidget {
     final audioprovider = Provider.of<AudioProvider>(context);
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-        title: Text("audios"),
-        actions: [
-          ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStatePropertyAll(
-                    const Color.fromARGB(255, 0, 0, 0)),
-              ),
-              onPressed: () {
-                // setState(() {
-                  audioprovider.isAscending = false;
-                // });
-              },
-              child: Text("sort")),
-        ],
+        title: Text("audios",style: TextStyle(color: Colors.white),),
+       
       ),
       body: Column(
         children: [
@@ -56,24 +45,19 @@ class AudioScreen extends StatelessWidget {
             child: Consumer<DbProvider>(
              
               builder: (context, dbProvider, child) {
-                List<FileModel> sortedFiles = List.from(dbProvider.recentFiles);
-                sortedFiles.sort((a, b) {
-                  return audioprovider.isAscending
-                      ? b.fileName.compareTo(a.fileName)
-                      : a.fileName.compareTo(b.fileName);
-                });
-                if (audioprovider.searchQuery.isNotEmpty) {
-                  sortedFiles = sortedFiles
-                      .where((file) => file.fileName
-                          .toLowerCase()
-                          .contains(audioprovider.searchQuery.toLowerCase()))
-                      .toList();
-                }
+                List<FileModel> filteredFiles = dbProvider.recentFiles
+                    .where((file) =>
+                        audioprovider.isAudioFile(file.fileName) &&
+                        file.fileName
+                            .toLowerCase()
+                            .contains(audioprovider.searchQuery.toLowerCase()))
+                    .toList();
+
 
                 return ListView.builder(
-                    itemCount: sortedFiles.length,
+                    itemCount: filteredFiles.length,
                     itemBuilder: (context, index) {
-                      final file = sortedFiles[index];
+                      final file = filteredFiles[index];
 
                       if (audioprovider. isAudioFile(file.fileName)) {
                         return ListTile(

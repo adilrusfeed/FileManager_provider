@@ -25,8 +25,7 @@ class PassFiles extends StatelessWidget {
                 elevation: 4,
                 child: GestureDetector(
                   onTap: () {
-                    DbProvider().openFile(limitedFiles[
-                        index]); // Instantiate DbProvider and call openFile
+                    DbProvider().openFile(limitedFiles[index]);
                   },
                   child: Container(
                     decoration: BoxDecoration(

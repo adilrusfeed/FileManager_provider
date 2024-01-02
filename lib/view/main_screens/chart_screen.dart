@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
+// import 'dart:math';
+
 import 'dart:math';
 
 import 'package:file_manager/controller/chart_provider.dart';
@@ -28,6 +30,7 @@ class _PieData {
 
 class _ChartScreenState extends State<ChartScreen> {
   late List<_PieData> pieData;
+  late DbProvider dbProvider;
 
   Color getRandomColor() {
     Random random = Random();
@@ -38,10 +41,15 @@ class _ChartScreenState extends State<ChartScreen> {
   @override
   void initState() {
     super.initState();
+    dbProvider = Provider.of<DbProvider>(context, listen: false);
     updateChartData();
+    dbProvider.addListener(updateChartData);
+  }
 
-    Provider.of<DbProvider>(context, listen: false)
-        .addListener(updateChartData);
+  @override
+  void dispose() {
+    dbProvider.removeListener(updateChartData);
+    super.dispose();
   }
 
   void updateChartData() {
@@ -71,6 +79,7 @@ class _ChartScreenState extends State<ChartScreen> {
         imageCount,
         '$imageCount\n${imagePercentage.toStringAsFixed(2)}%',
         imagePercentage,
+   
         getRandomColor(),
       ),
       _PieData(
@@ -108,7 +117,7 @@ class _ChartScreenState extends State<ChartScreen> {
         series: <PieSeries<_PieData, String>>[
           PieSeries<_PieData, String>(
             explode: true,
-            explodeIndex: 0,
+            explodeIndex: 0, 
             dataSource: pieData,
             xValueMapper: (_PieData data, z_) => data.xData,
             yValueMapper: (_PieData data, _) => data.yData,
