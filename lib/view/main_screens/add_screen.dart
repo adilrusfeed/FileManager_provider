@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 
 import 'package:provider/provider.dart';
+
 class AddScreen extends StatelessWidget {
   const AddScreen({Key? key}) : super(key: key);
 
@@ -73,7 +74,7 @@ class AddScreen extends StatelessWidget {
                   onPressed: () async {
                     if (provider.selectedFiles != null &&
                         provider.selectedFiles!.isNotEmpty) {
-                      await addFileToDb( context, provider.selectedFiles!);
+                      await addFileToDb(context, provider.selectedFiles!);
 
                       // getAlldata(); // Assuming getAlldata is defined somewhere
                       provider.setFiles(null);
@@ -197,7 +198,8 @@ class AddScreen extends StatelessWidget {
     }
   }
 
-  Future<void> addFileToDb( BuildContext context, List<PlatformFile> files) async {
+  Future<void> addFileToDb(
+      BuildContext context, List<PlatformFile> files) async {
     DbProvider dbProvider = Provider.of<DbProvider>(context, listen: false);
     for (var file in files) {
       await dbProvider.pickFile(file);

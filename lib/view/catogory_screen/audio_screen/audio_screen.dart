@@ -13,14 +13,15 @@ class AudioScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final audioprovider = Provider.of<AudioProvider>(context);
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-        title: Text("audios",style: TextStyle(color: Colors.white),),
-       
+        title: Text(
+          "audios",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Column(
         children: [
@@ -43,7 +44,6 @@ class AudioScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(30))))),
           Expanded(
             child: Consumer<DbProvider>(
-             
               builder: (context, dbProvider, child) {
                 List<FileModel> filteredFiles = dbProvider.recentFiles
                     .where((file) =>
@@ -53,16 +53,15 @@ class AudioScreen extends StatelessWidget {
                             .contains(audioprovider.searchQuery.toLowerCase()))
                     .toList();
 
-
                 return ListView.builder(
                     itemCount: filteredFiles.length,
                     itemBuilder: (context, index) {
                       final file = filteredFiles[index];
 
-                      if (audioprovider. isAudioFile(file.fileName)) {
+                      if (audioprovider.isAudioFile(file.fileName)) {
                         return ListTile(
                           onTap: () {
-                           dbProvider. openFile(file);
+                            dbProvider.openFile(file);
                           },
                           title: Text(
                             file.fileName,
@@ -79,7 +78,7 @@ class AudioScreen extends StatelessWidget {
                                   shape: MaterialStatePropertyAll(
                                       CircleBorder(eccentricity: 0))),
                               onPressed: () {
-                                _deleteDialog(file,context,dbProvider);
+                                _deleteDialog(file, context, dbProvider);
                               },
                               child: Icon(
                                 Icons.delete,
@@ -98,7 +97,8 @@ class AudioScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _deleteDialog(FileModel file,context, DbProvider dbProvider) async {
+  Future<void> _deleteDialog(
+      FileModel file, context, DbProvider dbProvider) async {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -121,7 +121,7 @@ class AudioScreen extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-              dbProvider.  deleteFile(file);
+                dbProvider.deleteFile(file);
                 Navigator.of(context).pop();
               },
               child: Text('Delete'),
